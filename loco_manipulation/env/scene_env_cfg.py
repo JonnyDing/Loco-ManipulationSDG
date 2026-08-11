@@ -5,19 +5,18 @@ from __future__ import annotations
 from pathlib import Path
 
 import isaaclab.sim as sim_utils
-from isaaclab.assets import ArticulationCfg, AssetBaseCfg
+from isaaclab.assets import ArticulationCfg, AssetBaseCfg, RigidObjectCollectionCfg
 from isaaclab.envs import ManagerBasedEnvCfg
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sensors import CameraCfg
 from isaaclab.utils import configclass
-from isaaclab_physx.sim.spawners.materials import PhysxRigidBodyMaterialCfg
 
-from loco_manipulation.config import G1_CFG
+from loco_manipulation.config import G1_CFG, OBJECTS_CFG
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCENE_USD_PATH = (PROJECT_ROOT / "assets/scene/lab/scene.usd").as_posix()
 CAMERA_EYE = (15.0, 15.0, 10.0)
-CAMERA_LOOKAT = (2.0, -2.0, 1.0)
+CAMERA_LOOKAT = (0.0, -3.57, 0.7)
 
 
 @configclass
@@ -26,22 +25,14 @@ class LocoManipulationSceneCfg(InteractiveSceneCfg):
 
     ground = AssetBaseCfg(
         prim_path="/World/Ground",
-        spawn=sim_utils.GroundPlaneCfg(
-            visible=False,
-            physics_material=PhysxRigidBodyMaterialCfg(
-                static_friction=1.0,
-                dynamic_friction=0.8,
-                restitution=0.0,
-                friction_combine_mode="max",
-                restitution_combine_mode="min",
-            ),
-        ),
+        spawn=sim_utils.GroundPlaneCfg(visible=False),
     )
     lab = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Lab",
         spawn=sim_utils.UsdFileCfg(usd_path=SCENE_USD_PATH),
     )
     robot: ArticulationCfg = G1_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+    objects: RigidObjectCollectionCfg = OBJECTS_CFG
     camera = CameraCfg(
         prim_path="{ENV_REGEX_NS}/Camera",
         update_period=0.0,

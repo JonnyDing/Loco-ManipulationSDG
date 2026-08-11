@@ -69,10 +69,12 @@ def main() -> None:
         env.reset()
 
         robot = env.scene["robot"]
+        objects = env.scene["objects"]
         camera = env.scene["camera"]
         print(
             f"[ready] envs={env.num_envs} bodies={robot.num_bodies} "
-            f"joints={robot.num_joints} cameras={camera.num_instances} "
+            f"joints={robot.num_joints} objects={objects.num_bodies} "
+            f"cameras={camera.num_instances} "
             f"rgb={tuple(camera.data.output['rgb'].shape)} device={env.device}"
         )
 
