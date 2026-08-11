@@ -1,5 +1,5 @@
-"""Manager-based environment configurations."""
+"""Asset configurations."""
 
-from .g1_env_cfg import G1_CFG, G1EnvCfg, G1SceneCfg
+from .g1_cfg import G1_CFG, G1_USD_PATH
 
-__all__ = ["G1_CFG", "G1EnvCfg", "G1SceneCfg"]
+__all__ = ["G1_CFG", "G1_USD_PATH"]

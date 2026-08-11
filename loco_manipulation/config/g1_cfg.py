@@ -1,30 +1,15 @@
-"""Manager-based Unitree G1 scene and environment configuration."""
+"""Unitree G1 articulation configuration."""
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import isaaclab.sim as sim_utils
 from isaaclab.actuators import ImplicitActuatorCfg
-from isaaclab.assets import ArticulationCfg, AssetBaseCfg
-from isaaclab.envs import ManagerBasedEnvCfg
-from isaaclab.scene import InteractiveSceneCfg
-from isaaclab.utils.configclass import configclass
+from isaaclab.assets import ArticulationCfg
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_G1_USD_PATH = REPOSITORY_ROOT / "assets/robots/Unitree/G1/g1_real_arm.usda"
-
-
-def resolve_g1_usd_path() -> str:
-    """Resolve the project-local G1 asset, with an optional environment override."""
-
-    override = os.environ.get("G1_USD_PATH")
-    path = Path(override).expanduser() if override else DEFAULT_G1_USD_PATH
-    path = path.resolve()
-    if not path.is_file():
-        raise FileNotFoundError(f"Unitree G1 USD asset not found: {path}")
-    return path.as_posix()
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+G1_USD_PATH = (PROJECT_ROOT / "assets/robots/Unitree/G1/g1_real_arm.usda").as_posix()
 
 
 G1_NOMINAL_STANDING_JOINT_POS = {
@@ -43,7 +28,7 @@ G1_NOMINAL_STANDING_JOINT_POS = {
 }
 
 
-def implicit_actuator(
+def _implicit_actuator_cfg(
     joints: list[str],
     effort: float | dict[str, float],
     velocity: float | dict[str, float],
@@ -64,7 +49,7 @@ def implicit_actuator(
 # repository-local and the hand defaults use a regex to avoid depending on HSDE.
 G1_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=resolve_g1_usd_path(),
+        usd_path=G1_USD_PATH,
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,
@@ -89,7 +74,7 @@ G1_CFG = ArticulationCfg(
     ),
     soft_joint_pos_limit_factor=0.90,
     actuators={
-        "legs_and_waist": implicit_actuator(
+        "legs_and_waist": _implicit_actuator_cfg(
             joints=[
                 ".*_hip_yaw_joint",
                 ".*_hip_roll_joint",
@@ -124,28 +109,28 @@ G1_CFG = ArticulationCfg(
             },
             damping=5.0,
         ),
-        "feet": implicit_actuator(
+        "feet": _implicit_actuator_cfg(
             joints=[".*_ankle_pitch_joint", ".*_ankle_roll_joint"],
             effort=35.0,
             velocity=30.0,
             stiffness=20.0,
             damping=2.0,
         ),
-        "shoulders": implicit_actuator(
+        "shoulders": _implicit_actuator_cfg(
             joints=[".*_shoulder_pitch_joint", ".*_shoulder_roll_joint"],
             effort=25.0,
             velocity=37.0,
             stiffness=100.0,
             damping=2.0,
         ),
-        "arms": implicit_actuator(
+        "arms": _implicit_actuator_cfg(
             joints=[".*_shoulder_yaw_joint", ".*_elbow_joint"],
             effort=25.0,
             velocity=37.0,
             stiffness=50.0,
             damping=2.0,
         ),
-        "wrists": implicit_actuator(
+        "wrists": _implicit_actuator_cfg(
             joints=[".*_wrist_.*"],
             effort={
                 ".*_wrist_yaw_joint": 5.0,
@@ -160,7 +145,7 @@ G1_CFG = ArticulationCfg(
             stiffness=40.0,
             damping=2.0,
         ),
-        "hands": implicit_actuator(
+        "hands": _implicit_actuator_cfg(
             joints=[
                 ".*_hand_thumb_[0-2]_joint",
                 ".*_hand_middle_[0-1]_joint",
@@ -173,48 +158,3 @@ G1_CFG = ArticulationCfg(
         ),
     },
 )
-
-
-@configclass
-class G1SceneCfg(InteractiveSceneCfg):
-    """Scene containing a G1 articulation, ground plane, and dome light."""
-
-    ground = AssetBaseCfg(
-        prim_path="/World/ground",
-        spawn=sim_utils.GroundPlaneCfg(size=(20.0, 20.0)),
-    )
-
-    robot: ArticulationCfg = G1_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
-
-    dome_light = AssetBaseCfg(
-        prim_path="/World/DomeLight",
-        spawn=sim_utils.DomeLightCfg(color=(0.75, 0.75, 0.75), intensity=2500.0),
-    )
-
-
-@configclass
-class EmptyManagerCfg:
-    """Placeholder manager configuration until task-specific MDP terms are added."""
-
-
-@configclass
-class G1EnvCfg(ManagerBasedEnvCfg):
-    """Base manager-based environment used to load and inspect the G1 robot."""
-
-    scene: G1SceneCfg = G1SceneCfg(
-        num_envs=1,
-        env_spacing=3.0,
-        replicate_physics=True,
-        clone_in_fabric=False,
-    )
-    actions: EmptyManagerCfg = EmptyManagerCfg()
-    observations: EmptyManagerCfg = EmptyManagerCfg()
-
-    def __post_init__(self) -> None:
-        self.decimation = 2
-        self.sim.dt = 1.0 / 120.0
-        self.sim.render_interval = self.decimation
-
-        # Frame the complete standing robot without requiring an initial zoom-out.
-        self.viewer.eye = (4.5, 4.5, 2.8)
-        self.viewer.lookat = (0.0, 0.0, 0.95)

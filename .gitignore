@@ -9,10 +9,10 @@ __pycache__/
 htmlcov/
 
 # Environments
-.conda/
-.venv/
-venv/
-env/
+/.conda/
+/.venv/
+/venv/
+/env/
 
 # Packaging
 build/
