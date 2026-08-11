@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environments
+.conda/
+.venv/
+venv/
+env/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# Editors and operating systems
+.idea/
+.vscode/*
+!.vscode/settings.json
+.DS_Store
+
+# Isaac Sim / Omniverse runtime files
+/assets/
+.cache/
+cache/
+logs/
+data/Kit/
+*.log
+
+# Experiment outputs
+outputs/
+runs/
+wandb/
+checkpoints/

@@ -1,0 +1,11 @@
+{
+    "python.defaultInterpreterPath": "/home/ubuntu/USE/Miniconda/envs/env_isaaclab/bin/python",
+    "python.languageServer": "Pylance",
+    "python.analysis.stubPath": "${workspaceFolder}/typings",
+    "python.analysis.extraPaths": [
+        "/home/ubuntu/USE/Miniconda/envs/env_isaaclab/lib/python3.12/site-packages/isaaclab/source/isaaclab",
+        "/home/ubuntu/USE/Miniconda/envs/env_isaaclab/lib/python3.12/site-packages/isaacsim/kit/kernel/py",
+        "/home/ubuntu/USE/Miniconda/envs/env_isaaclab/lib/python3.12/site-packages/isaacsim/exts/isaacsim.core.experimental.objects",
+        "/home/ubuntu/USE/Miniconda/envs/env_isaaclab/lib/python3.12/site-packages/isaacsim/exts/isaacsim.core.experimental.utils"
+    ]
+}
