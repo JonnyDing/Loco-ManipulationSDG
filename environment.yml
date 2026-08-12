@@ -11,3 +11,4 @@ dependencies:
       - --extra-index-url https://pypi.nvidia.com
       - "isaacsim[all,extscache]==6.0.1.0"
       - "isaaclab[all]==3.0.0"
+      - "pyyaml>=6.0"

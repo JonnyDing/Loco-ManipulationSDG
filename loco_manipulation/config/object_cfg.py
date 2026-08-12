@@ -5,9 +5,16 @@ from pathlib import Path
 import isaaclab.sim as sim_utils
 from isaaclab.assets import RigidObjectCfg, RigidObjectCollectionCfg
 
+from .scene_coordinates import (
+    BAMBOO_BASKET_WORLD_POS,
+    BAMBOO_BASKET_WORLD_ROT_XYZW,
+    CUP_WORLD_POS,
+    CUP_WORLD_ROT_XYZW,
+)
+
 OBJECTS_ROOT = Path(__file__).resolve().parents[2] / "assets/objects"
 
-# Source poses use Isaac Sim 5.x (w, x, y, z); InitialStateCfg uses (x, y, z, w).
+# HSDE source poses use WXYZ; Isaac Lab 3.0 InitialStateCfg uses XYZW.
 OBJECTS_CFG = RigidObjectCollectionCfg(
     rigid_objects={
         "cup": RigidObjectCfg(
@@ -16,8 +23,8 @@ OBJECTS_CFG = RigidObjectCollectionCfg(
                 usd_path=(OBJECTS_ROOT / "cup/cup.usd").as_posix()
             ),
             init_state=RigidObjectCfg.InitialStateCfg(
-                pos=(-0.27, -3.54, 0.64),
-                rot=(1.0, 0.0, 0.0, 0.0),
+                pos=CUP_WORLD_POS,
+                rot=CUP_WORLD_ROT_XYZW,
             ),
         ),
         "bamboo_basket": RigidObjectCfg(
@@ -26,8 +33,8 @@ OBJECTS_CFG = RigidObjectCollectionCfg(
                 usd_path=(OBJECTS_ROOT / "bamboo_basket/bamboo_basket.usd").as_posix()
             ),
             init_state=RigidObjectCfg.InitialStateCfg(
-                pos=(0.0, -3.61, 0.7),
-                rot=(0.0, 0.0, -0.7071068, 0.7071068),
+                pos=BAMBOO_BASKET_WORLD_POS,
+                rot=BAMBOO_BASKET_WORLD_ROT_XYZW,
             ),
         ),
     }

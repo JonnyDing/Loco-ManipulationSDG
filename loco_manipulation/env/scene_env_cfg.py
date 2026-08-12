@@ -11,7 +11,12 @@ from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sensors import CameraCfg
 from isaaclab.utils import configclass
 
-from loco_manipulation.config import G1_CFG, OBJECTS_CFG
+from loco_manipulation.config import (
+    G1_CFG,
+    LAB_WORLD_POS,
+    LAB_WORLD_ROT_XYZW,
+    OBJECTS_CFG,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCENE_USD_PATH = (PROJECT_ROOT / "assets/scene/lab/scene.usd").as_posix()
@@ -30,6 +35,10 @@ class LocoManipulationSceneCfg(InteractiveSceneCfg):
     lab = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Lab",
         spawn=sim_utils.UsdFileCfg(usd_path=SCENE_USD_PATH),
+        init_state=AssetBaseCfg.InitialStateCfg(
+            pos=LAB_WORLD_POS,
+            rot=LAB_WORLD_ROT_XYZW,
+        ),
     )
     robot: ArticulationCfg = G1_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
     objects: RigidObjectCollectionCfg = OBJECTS_CFG
